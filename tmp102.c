@@ -51,7 +51,7 @@ static esp_err_t write_temperature_threshold(uint8_t reg, float temperature);
 esp_err_t tmp102_init(uint8_t dev_addr)
 {
     /* Validate I2C address (7-bit range) */
-    if ((dev_addr < 0x03U) || (dev_addr > 0x77U))
+    if((dev_addr < 0x03U) || (dev_addr > 0x77U))
     {
         ESP_LOGE(TAG, "Invalid I2C address: 0x%02X", dev_addr);
         return ESP_ERR_INVALID_ARG;
@@ -62,7 +62,7 @@ esp_err_t tmp102_init(uint8_t dev_addr)
 
     /* Probe device */
     hal_err_t ret = board_hal_i2c_probe(HAL_I2C_PORT_0, g_dev_addr);
-    if (ret != HAL_OK)
+    if(ret != HAL_OK)
     {
         ESP_LOGE(TAG, "Device not found at address 0x%02X", g_dev_addr);
         g_initialized = false;
@@ -84,7 +84,7 @@ esp_err_t tmp102_deinit(void)
 
 bool tmp102_is_present(void)
 {
-    if (!g_initialized)
+    if(!g_initialized)
     {
         return false;
     }
@@ -97,14 +97,14 @@ bool tmp102_is_present(void)
 esp_err_t tmp102_read_temp_c(float* temp_c)
 {
     /* Parameter validation */
-    if (temp_c == NULL)
+    if(temp_c == NULL)
     {
         ESP_LOGE(TAG, "temp_c is NULL");
         return ESP_ERR_INVALID_ARG;
     }
 
     /* State validation */
-    if (!g_initialized)
+    if(!g_initialized)
     {
         ESP_LOGE(TAG, "Sensor not initialized");
         return ESP_ERR_INVALID_STATE;
@@ -120,14 +120,14 @@ esp_err_t tmp102_read_temp_f(float* temp_f)
     float temp_c = 0.0f;
 
     /* Parameter validation */
-    if (temp_f == NULL)
+    if(temp_f == NULL)
     {
         ESP_LOGE(TAG, "temp_f is NULL");
         return ESP_ERR_INVALID_ARG;
     }
 
     /* State validation */
-    if (!g_initialized)
+    if(!g_initialized)
     {
         ESP_LOGE(TAG, "Sensor not initialized");
         return ESP_ERR_INVALID_STATE;
@@ -135,7 +135,7 @@ esp_err_t tmp102_read_temp_f(float* temp_f)
 
     /* Read temperature in Celsius */
     ret = read_temperature_raw(&temp_c);
-    if (ret != ESP_OK)
+    if(ret != ESP_OK)
     {
         return ret;
     }
@@ -151,7 +151,7 @@ esp_err_t tmp102_sleep(void)
     uint8_t config_byte = 0U;
 
     /* State validation */
-    if (!g_initialized)
+    if(!g_initialized)
     {
         ESP_LOGE(TAG, "Sensor not initialized");
         return ESP_ERR_INVALID_STATE;
@@ -159,14 +159,14 @@ esp_err_t tmp102_sleep(void)
 
     /* Set pointer to config register */
     ret = open_pointer_register(TMP102_REG_CONFIG);
-    if (ret != ESP_OK)
+    if(ret != ESP_OK)
     {
         return ret;
     }
 
     /* Read first byte of config register */
     ret = read_register_byte(0U, &config_byte);
-    if (ret != ESP_OK)
+    if(ret != ESP_OK)
     {
         return ret;
     }
@@ -178,7 +178,7 @@ esp_err_t tmp102_sleep(void)
     uint8_t write_buf[2] = {TMP102_REG_CONFIG, config_byte};
     hal_err_t hal_ret = board_hal_i2c_write(HAL_I2C_PORT_0, g_dev_addr, write_buf, 2U, TMP102_I2C_TIMEOUT_MS);
 
-    if (hal_ret != HAL_OK)
+    if(hal_ret != HAL_OK)
     {
         ESP_LOGE(TAG, "Failed to enter sleep mode");
         return ESP_FAIL;
@@ -193,7 +193,7 @@ esp_err_t tmp102_wakeup(void)
     uint8_t config_byte = 0U;
 
     /* State validation */
-    if (!g_initialized)
+    if(!g_initialized)
     {
         ESP_LOGE(TAG, "Sensor not initialized");
         return ESP_ERR_INVALID_STATE;
@@ -201,14 +201,14 @@ esp_err_t tmp102_wakeup(void)
 
     /* Set pointer to config register */
     ret = open_pointer_register(TMP102_REG_CONFIG);
-    if (ret != ESP_OK)
+    if(ret != ESP_OK)
     {
         return ret;
     }
 
     /* Read first byte of config register */
     ret = read_register_byte(0U, &config_byte);
-    if (ret != ESP_OK)
+    if(ret != ESP_OK)
     {
         return ret;
     }
@@ -220,7 +220,7 @@ esp_err_t tmp102_wakeup(void)
     uint8_t write_buf[2] = {TMP102_REG_CONFIG, config_byte};
     hal_err_t hal_ret = board_hal_i2c_write(HAL_I2C_PORT_0, g_dev_addr, write_buf, 2U, TMP102_I2C_TIMEOUT_MS);
 
-    if (hal_ret != HAL_OK)
+    if(hal_ret != HAL_OK)
     {
         ESP_LOGE(TAG, "Failed to wake from sleep mode");
         return ESP_FAIL;
@@ -235,14 +235,14 @@ esp_err_t tmp102_alert(bool* alert_state)
     uint8_t config_byte = 0U;
 
     /* Parameter validation */
-    if (alert_state == NULL)
+    if(alert_state == NULL)
     {
         ESP_LOGE(TAG, "alert_state is NULL");
         return ESP_ERR_INVALID_ARG;
     }
 
     /* State validation */
-    if (!g_initialized)
+    if(!g_initialized)
     {
         ESP_LOGE(TAG, "Sensor not initialized");
         return ESP_ERR_INVALID_STATE;
@@ -250,14 +250,14 @@ esp_err_t tmp102_alert(bool* alert_state)
 
     /* Set pointer to config register */
     ret = open_pointer_register(TMP102_REG_CONFIG);
-    if (ret != ESP_OK)
+    if(ret != ESP_OK)
     {
         return ret;
     }
 
     /* Read second byte of config register */
     ret = read_register_byte(1U, &config_byte);
-    if (ret != ESP_OK)
+    if(ret != ESP_OK)
     {
         return ret;
     }
@@ -273,14 +273,14 @@ esp_err_t tmp102_one_shot(bool set, bool* ready)
     uint8_t config_byte = 0U;
 
     /* Parameter validation */
-    if (ready == NULL)
+    if(ready == NULL)
     {
         ESP_LOGE(TAG, "ready is NULL");
         return ESP_ERR_INVALID_ARG;
     }
 
     /* State validation */
-    if (!g_initialized)
+    if(!g_initialized)
     {
         ESP_LOGE(TAG, "Sensor not initialized");
         return ESP_ERR_INVALID_STATE;
@@ -290,13 +290,13 @@ esp_err_t tmp102_one_shot(bool set, bool* ready)
     uint8_t reg = TMP102_REG_CONFIG;
     hal_err_t hal_ret = board_hal_i2c_write_read(HAL_I2C_PORT_0, g_dev_addr, &reg, 1U, &config_byte, 1U, TMP102_I2C_TIMEOUT_MS);
 
-    if (hal_ret != HAL_OK)
+    if(hal_ret != HAL_OK)
     {
         ESP_LOGE(TAG, "Failed to read config register");
         return ESP_FAIL;
     }
 
-    if (set)
+    if(set)
     {
         /* Enable one-shot by writing 1 to OS bit (bit 7) */
         config_byte |= (1U << 7U);
@@ -305,7 +305,7 @@ esp_err_t tmp102_one_shot(bool set, bool* ready)
         uint8_t write_buf[2] = {TMP102_REG_CONFIG, config_byte};
         hal_ret = board_hal_i2c_write(HAL_I2C_PORT_0, g_dev_addr, write_buf, 2U, TMP102_I2C_TIMEOUT_MS);
 
-        if (hal_ret != HAL_OK)
+        if(hal_ret != HAL_OK)
         {
             ESP_LOGE(TAG, "Failed to set one-shot mode");
             return ESP_FAIL;
@@ -328,7 +328,7 @@ esp_err_t tmp102_set_conversion_rate(tmp102_conv_rate_t rate)
     uint8_t config_bytes[2] = {0U, 0U};
 
     /* State validation */
-    if (!g_initialized)
+    if(!g_initialized)
     {
         ESP_LOGE(TAG, "Sensor not initialized");
         return ESP_ERR_INVALID_STATE;
@@ -339,19 +339,19 @@ esp_err_t tmp102_set_conversion_rate(tmp102_conv_rate_t rate)
 
     /* Set pointer to config register */
     ret = open_pointer_register(TMP102_REG_CONFIG);
-    if (ret != ESP_OK)
+    if(ret != ESP_OK)
     {
         return ret;
     }
 
     /* Read both config bytes */
     ret = read_register_byte(0U, &config_bytes[0]);
-    if (ret != ESP_OK)
+    if(ret != ESP_OK)
     {
         return ret;
     }
     ret = read_register_byte(1U, &config_bytes[1]);
-    if (ret != ESP_OK)
+    if(ret != ESP_OK)
     {
         return ret;
     }
@@ -364,7 +364,7 @@ esp_err_t tmp102_set_conversion_rate(tmp102_conv_rate_t rate)
     uint8_t write_buf[3] = {TMP102_REG_CONFIG, config_bytes[0], config_bytes[1]};
     hal_err_t hal_ret = board_hal_i2c_write(HAL_I2C_PORT_0, g_dev_addr, write_buf, 3U, TMP102_I2C_TIMEOUT_MS);
 
-    if (hal_ret != HAL_OK)
+    if(hal_ret != HAL_OK)
     {
         ESP_LOGE(TAG, "Failed to set conversion rate");
         return ESP_FAIL;
@@ -379,7 +379,7 @@ esp_err_t tmp102_set_extended_mode(bool mode)
     uint8_t config_bytes[2] = {0U, 0U};
 
     /* State validation */
-    if (!g_initialized)
+    if(!g_initialized)
     {
         ESP_LOGE(TAG, "Sensor not initialized");
         return ESP_ERR_INVALID_STATE;
@@ -387,26 +387,26 @@ esp_err_t tmp102_set_extended_mode(bool mode)
 
     /* Set pointer to config register */
     ret = open_pointer_register(TMP102_REG_CONFIG);
-    if (ret != ESP_OK)
+    if(ret != ESP_OK)
     {
         return ret;
     }
 
     /* Read both config bytes */
     ret = read_register_byte(0U, &config_bytes[0]);
-    if (ret != ESP_OK)
+    if(ret != ESP_OK)
     {
         return ret;
     }
     ret = read_register_byte(1U, &config_bytes[1]);
-    if (ret != ESP_OK)
+    if(ret != ESP_OK)
     {
         return ret;
     }
 
     /* Clear EM bit (bit 4 of second byte) and set new mode */
     config_bytes[1] &= 0xEFU;
-    if (mode)
+    if(mode)
     {
         config_bytes[1] |= (1U << 4U);
     }
@@ -415,7 +415,7 @@ esp_err_t tmp102_set_extended_mode(bool mode)
     uint8_t write_buf[3] = {TMP102_REG_CONFIG, config_bytes[0], config_bytes[1]};
     hal_err_t hal_ret = board_hal_i2c_write(HAL_I2C_PORT_0, g_dev_addr, write_buf, 3U, TMP102_I2C_TIMEOUT_MS);
 
-    if (hal_ret != HAL_OK)
+    if(hal_ret != HAL_OK)
     {
         ESP_LOGE(TAG, "Failed to set extended mode");
         return ESP_FAIL;
@@ -430,7 +430,7 @@ esp_err_t tmp102_set_alert_polarity(bool polarity)
     uint8_t config_byte = 0U;
 
     /* State validation */
-    if (!g_initialized)
+    if(!g_initialized)
     {
         ESP_LOGE(TAG, "Sensor not initialized");
         return ESP_ERR_INVALID_STATE;
@@ -438,21 +438,21 @@ esp_err_t tmp102_set_alert_polarity(bool polarity)
 
     /* Set pointer to config register */
     ret = open_pointer_register(TMP102_REG_CONFIG);
-    if (ret != ESP_OK)
+    if(ret != ESP_OK)
     {
         return ret;
     }
 
     /* Read first byte of config register */
     ret = read_register_byte(0U, &config_byte);
-    if (ret != ESP_OK)
+    if(ret != ESP_OK)
     {
         return ret;
     }
 
     /* Clear POL bit (bit 2) and set new polarity */
     config_byte &= 0xFBU;
-    if (polarity)
+    if(polarity)
     {
         config_byte |= (1U << 2U);
     }
@@ -461,7 +461,7 @@ esp_err_t tmp102_set_alert_polarity(bool polarity)
     uint8_t write_buf[2] = {TMP102_REG_CONFIG, config_byte};
     hal_err_t hal_ret = board_hal_i2c_write(HAL_I2C_PORT_0, g_dev_addr, write_buf, 2U, TMP102_I2C_TIMEOUT_MS);
 
-    if (hal_ret != HAL_OK)
+    if(hal_ret != HAL_OK)
     {
         ESP_LOGE(TAG, "Failed to set alert polarity");
         return ESP_FAIL;
@@ -476,7 +476,7 @@ esp_err_t tmp102_set_fault(tmp102_fault_t fault)
     uint8_t config_byte = 0U;
 
     /* State validation */
-    if (!g_initialized)
+    if(!g_initialized)
     {
         ESP_LOGE(TAG, "Sensor not initialized");
         return ESP_ERR_INVALID_STATE;
@@ -487,14 +487,14 @@ esp_err_t tmp102_set_fault(tmp102_fault_t fault)
 
     /* Set pointer to config register */
     ret = open_pointer_register(TMP102_REG_CONFIG);
-    if (ret != ESP_OK)
+    if(ret != ESP_OK)
     {
         return ret;
     }
 
     /* Read first byte of config register */
     ret = read_register_byte(0U, &config_byte);
-    if (ret != ESP_OK)
+    if(ret != ESP_OK)
     {
         return ret;
     }
@@ -507,7 +507,7 @@ esp_err_t tmp102_set_fault(tmp102_fault_t fault)
     uint8_t write_buf[2] = {TMP102_REG_CONFIG, config_byte};
     hal_err_t hal_ret = board_hal_i2c_write(HAL_I2C_PORT_0, g_dev_addr, write_buf, 2U, TMP102_I2C_TIMEOUT_MS);
 
-    if (hal_ret != HAL_OK)
+    if(hal_ret != HAL_OK)
     {
         ESP_LOGE(TAG, "Failed to set fault queue");
         return ESP_FAIL;
@@ -522,7 +522,7 @@ esp_err_t tmp102_set_alert_mode(bool mode)
     uint8_t config_byte = 0U;
 
     /* State validation */
-    if (!g_initialized)
+    if(!g_initialized)
     {
         ESP_LOGE(TAG, "Sensor not initialized");
         return ESP_ERR_INVALID_STATE;
@@ -530,21 +530,21 @@ esp_err_t tmp102_set_alert_mode(bool mode)
 
     /* Set pointer to config register */
     ret = open_pointer_register(TMP102_REG_CONFIG);
-    if (ret != ESP_OK)
+    if(ret != ESP_OK)
     {
         return ret;
     }
 
     /* Read first byte of config register */
     ret = read_register_byte(0U, &config_byte);
-    if (ret != ESP_OK)
+    if(ret != ESP_OK)
     {
         return ret;
     }
 
     /* Clear TM bit (bit 1) and set new mode */
     config_byte &= 0xFDU;
-    if (mode)
+    if(mode)
     {
         config_byte |= (1U << 1U);
     }
@@ -553,7 +553,7 @@ esp_err_t tmp102_set_alert_mode(bool mode)
     uint8_t write_buf[2] = {TMP102_REG_CONFIG, config_byte};
     hal_err_t hal_ret = board_hal_i2c_write(HAL_I2C_PORT_0, g_dev_addr, write_buf, 2U, TMP102_I2C_TIMEOUT_MS);
 
-    if (hal_ret != HAL_OK)
+    if(hal_ret != HAL_OK)
     {
         ESP_LOGE(TAG, "Failed to set alert mode");
         return ESP_FAIL;
@@ -565,7 +565,7 @@ esp_err_t tmp102_set_alert_mode(bool mode)
 esp_err_t tmp102_set_low_temp_c(float temp)
 {
     /* State validation */
-    if (!g_initialized)
+    if(!g_initialized)
     {
         ESP_LOGE(TAG, "Sensor not initialized");
         return ESP_ERR_INVALID_STATE;
@@ -577,7 +577,7 @@ esp_err_t tmp102_set_low_temp_c(float temp)
 esp_err_t tmp102_set_high_temp_c(float temp)
 {
     /* State validation */
-    if (!g_initialized)
+    if(!g_initialized)
     {
         ESP_LOGE(TAG, "Sensor not initialized");
         return ESP_ERR_INVALID_STATE;
@@ -591,7 +591,7 @@ esp_err_t tmp102_set_low_temp_f(float temp)
     float temp_c;
 
     /* State validation */
-    if (!g_initialized)
+    if(!g_initialized)
     {
         ESP_LOGE(TAG, "Sensor not initialized");
         return ESP_ERR_INVALID_STATE;
@@ -607,7 +607,7 @@ esp_err_t tmp102_set_high_temp_f(float temp)
     float temp_c;
 
     /* State validation */
-    if (!g_initialized)
+    if(!g_initialized)
     {
         ESP_LOGE(TAG, "Sensor not initialized");
         return ESP_ERR_INVALID_STATE;
@@ -627,14 +627,14 @@ esp_err_t tmp102_read_low_temp_c(float* temp)
     int16_t digital_temp;
 
     /* Parameter validation */
-    if (temp == NULL)
+    if(temp == NULL)
     {
         ESP_LOGE(TAG, "temp is NULL");
         return ESP_ERR_INVALID_ARG;
     }
 
     /* State validation */
-    if (!g_initialized)
+    if(!g_initialized)
     {
         ESP_LOGE(TAG, "Sensor not initialized");
         return ESP_ERR_INVALID_STATE;
@@ -642,19 +642,19 @@ esp_err_t tmp102_read_low_temp_c(float* temp)
 
     /* Read config register to determine extended mode */
     ret = open_pointer_register(TMP102_REG_CONFIG);
-    if (ret != ESP_OK)
+    if(ret != ESP_OK)
     {
         return ret;
     }
 
     ret = read_register_byte(0U, &config_bytes[0]);
-    if (ret != ESP_OK)
+    if(ret != ESP_OK)
     {
         return ret;
     }
 
     ret = read_register_byte(1U, &config_bytes[1]);
-    if (ret != ESP_OK)
+    if(ret != ESP_OK)
     {
         return ret;
     }
@@ -663,36 +663,36 @@ esp_err_t tmp102_read_low_temp_c(float* temp)
 
     /* Read T_LOW register */
     ret = open_pointer_register(TMP102_REG_T_LOW);
-    if (ret != ESP_OK)
+    if(ret != ESP_OK)
     {
         return ret;
     }
 
     ret = read_register_byte(0U, &temp_bytes[0]);
-    if (ret != ESP_OK)
+    if(ret != ESP_OK)
     {
         return ret;
     }
 
     ret = read_register_byte(1U, &temp_bytes[1]);
-    if (ret != ESP_OK)
+    if(ret != ESP_OK)
     {
         return ret;
     }
 
     /* Check for invalid reading */
-    if ((temp_bytes[0] == 0xFFU) && (temp_bytes[1] == 0xFFU))
+    if((temp_bytes[0] == 0xFFU) && (temp_bytes[1] == 0xFFU))
     {
         ESP_LOGE(TAG, "Invalid T_LOW reading");
         return ESP_ERR_INVALID_RESPONSE;
     }
 
     /* Convert to digital temperature based on mode */
-    if (extended_mode)
+    if(extended_mode)
     {
         /* 13-bit mode */
         digital_temp = (int16_t)(((uint16_t)temp_bytes[0] << 5U) | ((uint16_t)temp_bytes[1] >> 3U));
-        if (digital_temp > 0x0FFF)
+        if(digital_temp > 0x0FFF)
         {
             digital_temp |= (int16_t)0xE000;
         }
@@ -701,7 +701,7 @@ esp_err_t tmp102_read_low_temp_c(float* temp)
     {
         /* 12-bit mode */
         digital_temp = (int16_t)(((uint16_t)temp_bytes[0] << 4U) | ((uint16_t)temp_bytes[1] >> 4U));
-        if (digital_temp > 0x07FF)
+        if(digital_temp > 0x07FF)
         {
             digital_temp |= (int16_t)0xF000;
         }
@@ -711,7 +711,7 @@ esp_err_t tmp102_read_low_temp_c(float* temp)
     *temp = (float)digital_temp * 0.0625f;
 
     /* Validate range */
-    if ((*temp < TMP102_TEMP_MIN_C) || (*temp > TMP102_TEMP_MAX_C))
+    if((*temp < TMP102_TEMP_MIN_C) || (*temp > TMP102_TEMP_MAX_C))
     {
         ESP_LOGE(TAG, "T_LOW out of range: %f", *temp);
         return ESP_ERR_INVALID_RESPONSE;
@@ -729,14 +729,14 @@ esp_err_t tmp102_read_high_temp_c(float* temp)
     int16_t digital_temp;
 
     /* Parameter validation */
-    if (temp == NULL)
+    if(temp == NULL)
     {
         ESP_LOGE(TAG, "temp is NULL");
         return ESP_ERR_INVALID_ARG;
     }
 
     /* State validation */
-    if (!g_initialized)
+    if(!g_initialized)
     {
         ESP_LOGE(TAG, "Sensor not initialized");
         return ESP_ERR_INVALID_STATE;
@@ -744,19 +744,19 @@ esp_err_t tmp102_read_high_temp_c(float* temp)
 
     /* Read config register to determine extended mode */
     ret = open_pointer_register(TMP102_REG_CONFIG);
-    if (ret != ESP_OK)
+    if(ret != ESP_OK)
     {
         return ret;
     }
 
     ret = read_register_byte(0U, &config_bytes[0]);
-    if (ret != ESP_OK)
+    if(ret != ESP_OK)
     {
         return ret;
     }
 
     ret = read_register_byte(1U, &config_bytes[1]);
-    if (ret != ESP_OK)
+    if(ret != ESP_OK)
     {
         return ret;
     }
@@ -765,36 +765,36 @@ esp_err_t tmp102_read_high_temp_c(float* temp)
 
     /* Read T_HIGH register */
     ret = open_pointer_register(TMP102_REG_T_HIGH);
-    if (ret != ESP_OK)
+    if(ret != ESP_OK)
     {
         return ret;
     }
 
     ret = read_register_byte(0U, &temp_bytes[0]);
-    if (ret != ESP_OK)
+    if(ret != ESP_OK)
     {
         return ret;
     }
 
     ret = read_register_byte(1U, &temp_bytes[1]);
-    if (ret != ESP_OK)
+    if(ret != ESP_OK)
     {
         return ret;
     }
 
     /* Check for invalid reading */
-    if ((temp_bytes[0] == 0xFFU) && (temp_bytes[1] == 0xFFU))
+    if((temp_bytes[0] == 0xFFU) && (temp_bytes[1] == 0xFFU))
     {
         ESP_LOGE(TAG, "Invalid T_HIGH reading");
         return ESP_ERR_INVALID_RESPONSE;
     }
 
     /* Convert to digital temperature based on mode */
-    if (extended_mode)
+    if(extended_mode)
     {
         /* 13-bit mode */
         digital_temp = (int16_t)(((uint16_t)temp_bytes[0] << 5U) | ((uint16_t)temp_bytes[1] >> 3U));
-        if (digital_temp > 0x0FFF)
+        if(digital_temp > 0x0FFF)
         {
             digital_temp |= (int16_t)0xE000;
         }
@@ -803,7 +803,7 @@ esp_err_t tmp102_read_high_temp_c(float* temp)
     {
         /* 12-bit mode */
         digital_temp = (int16_t)(((uint16_t)temp_bytes[0] << 4U) | ((uint16_t)temp_bytes[1] >> 4U));
-        if (digital_temp > 0x07FF)
+        if(digital_temp > 0x07FF)
         {
             digital_temp |= (int16_t)0xF000;
         }
@@ -813,7 +813,7 @@ esp_err_t tmp102_read_high_temp_c(float* temp)
     *temp = (float)digital_temp * 0.0625f;
 
     /* Validate range */
-    if ((*temp < TMP102_TEMP_MIN_C) || (*temp > TMP102_TEMP_MAX_C))
+    if((*temp < TMP102_TEMP_MIN_C) || (*temp > TMP102_TEMP_MAX_C))
     {
         ESP_LOGE(TAG, "T_HIGH out of range: %f", *temp);
         return ESP_ERR_INVALID_RESPONSE;
@@ -828,7 +828,7 @@ esp_err_t tmp102_read_low_temp_f(float* temp)
     float temp_c = 0.0f;
 
     /* Parameter validation */
-    if (temp == NULL)
+    if(temp == NULL)
     {
         ESP_LOGE(TAG, "temp is NULL");
         return ESP_ERR_INVALID_ARG;
@@ -836,7 +836,7 @@ esp_err_t tmp102_read_low_temp_f(float* temp)
 
     /* Read in Celsius */
     ret = tmp102_read_low_temp_c(&temp_c);
-    if (ret != ESP_OK)
+    if(ret != ESP_OK)
     {
         return ret;
     }
@@ -852,7 +852,7 @@ esp_err_t tmp102_read_high_temp_f(float* temp)
     float temp_c = 0.0f;
 
     /* Parameter validation */
-    if (temp == NULL)
+    if(temp == NULL)
     {
         ESP_LOGE(TAG, "temp is NULL");
         return ESP_ERR_INVALID_ARG;
@@ -860,7 +860,7 @@ esp_err_t tmp102_read_high_temp_f(float* temp)
 
     /* Read in Celsius */
     ret = tmp102_read_high_temp_c(&temp_c);
-    if (ret != ESP_OK)
+    if(ret != ESP_OK)
     {
         return ret;
     }
@@ -875,7 +875,7 @@ esp_err_t tmp102_read_high_temp_f(float* temp)
 static esp_err_t open_pointer_register(uint8_t reg)
 {
     hal_err_t ret = board_hal_i2c_write(HAL_I2C_PORT_0, g_dev_addr, &reg, 1U, TMP102_I2C_TIMEOUT_MS);
-    if (ret != HAL_OK)
+    if(ret != HAL_OK)
     {
         ESP_LOGE(TAG, "Failed to set pointer register to 0x%02X", reg);
         return ESP_FAIL;
@@ -889,14 +889,14 @@ static esp_err_t read_register_byte(uint8_t byte_index, uint8_t* value)
 
     /* Read two bytes from TMP102 */
     hal_err_t ret = board_hal_i2c_read(HAL_I2C_PORT_0, g_dev_addr, register_bytes, 2U, TMP102_I2C_TIMEOUT_MS);
-    if (ret != HAL_OK)
+    if(ret != HAL_OK)
     {
         ESP_LOGE(TAG, "Failed to read register");
         return ESP_FAIL;
     }
 
     /* Validate byte index */
-    if (byte_index > 1U)
+    if(byte_index > 1U)
     {
         ESP_LOGE(TAG, "Invalid byte index: %u", byte_index);
         return ESP_ERR_INVALID_ARG;
@@ -914,37 +914,37 @@ static esp_err_t read_temperature_raw(float* temperature)
 
     /* Set pointer to temperature register */
     ret = open_pointer_register(TMP102_REG_TEMPERATURE);
-    if (ret != ESP_OK)
+    if(ret != ESP_OK)
     {
         return ret;
     }
 
     /* Read temperature bytes */
     ret = read_register_byte(0U, &temp_bytes[0]);
-    if (ret != ESP_OK)
+    if(ret != ESP_OK)
     {
         return ret;
     }
 
     ret = read_register_byte(1U, &temp_bytes[1]);
-    if (ret != ESP_OK)
+    if(ret != ESP_OK)
     {
         return ret;
     }
 
     /* Check for invalid reading */
-    if ((temp_bytes[0] == 0xFFU) && (temp_bytes[1] == 0xFFU))
+    if((temp_bytes[0] == 0xFFU) && (temp_bytes[1] == 0xFFU))
     {
         ESP_LOGE(TAG, "Invalid temperature reading");
         return ESP_ERR_INVALID_RESPONSE;
     }
 
     /* Bit 0 of second byte indicates 12-bit (0) or 13-bit (1) mode */
-    if ((temp_bytes[1] & 0x01U) != 0U)
+    if((temp_bytes[1] & 0x01U) != 0U)
     {
         /* 13-bit mode */
         digital_temp = (int16_t)(((uint16_t)temp_bytes[0] << 5U) | ((uint16_t)temp_bytes[1] >> 3U));
-        if (digital_temp > 0x0FFF)
+        if(digital_temp > 0x0FFF)
         {
             digital_temp |= (int16_t)0xE000;
         }
@@ -953,7 +953,7 @@ static esp_err_t read_temperature_raw(float* temperature)
     {
         /* 12-bit mode */
         digital_temp = (int16_t)(((uint16_t)temp_bytes[0] << 4U) | ((uint16_t)temp_bytes[1] >> 4U));
-        if (digital_temp > 0x07FF)
+        if(digital_temp > 0x07FF)
         {
             digital_temp |= (int16_t)0xF000;
         }
@@ -963,7 +963,7 @@ static esp_err_t read_temperature_raw(float* temperature)
     *temperature = (float)digital_temp * 0.0625f;
 
     /* Validate range */
-    if ((*temperature < TMP102_TEMP_MIN_C) || (*temperature > TMP102_TEMP_MAX_C))
+    if((*temperature < TMP102_TEMP_MIN_C) || (*temperature > TMP102_TEMP_MAX_C))
     {
         ESP_LOGE(TAG, "Temperature out of range: %f", *temperature);
         return ESP_ERR_INVALID_RESPONSE;
@@ -981,30 +981,30 @@ static esp_err_t write_temperature_threshold(uint8_t reg, float temperature)
     int16_t digital_temp;
 
     /* Clamp temperature to sensor range */
-    if (temperature > TMP102_TEMP_MAX_C)
+    if(temperature > TMP102_TEMP_MAX_C)
     {
         temperature = TMP102_TEMP_MAX_C;
     }
-    if (temperature < TMP102_TEMP_MIN_C)
+    if(temperature < TMP102_TEMP_MIN_C)
     {
         temperature = TMP102_TEMP_MIN_C;
     }
 
     /* Read config register to determine extended mode */
     ret = open_pointer_register(TMP102_REG_CONFIG);
-    if (ret != ESP_OK)
+    if(ret != ESP_OK)
     {
         return ret;
     }
 
     ret = read_register_byte(0U, &config_bytes[0]);
-    if (ret != ESP_OK)
+    if(ret != ESP_OK)
     {
         return ret;
     }
 
     ret = read_register_byte(1U, &config_bytes[1]);
-    if (ret != ESP_OK)
+    if(ret != ESP_OK)
     {
         return ret;
     }
@@ -1015,7 +1015,7 @@ static esp_err_t write_temperature_threshold(uint8_t reg, float temperature)
     digital_temp = (int16_t)(temperature / 0.0625f);
 
     /* Split into bytes based on mode */
-    if (extended_mode)
+    if(extended_mode)
     {
         /* 13-bit mode */
         temp_bytes[0] = (uint8_t)((uint16_t)digital_temp >> 5U);
@@ -1032,7 +1032,7 @@ static esp_err_t write_temperature_threshold(uint8_t reg, float temperature)
     uint8_t write_buf[3] = {reg, temp_bytes[0], temp_bytes[1]};
     hal_err_t hal_ret = board_hal_i2c_write(HAL_I2C_PORT_0, g_dev_addr, write_buf, 3U, TMP102_I2C_TIMEOUT_MS);
 
-    if (hal_ret != HAL_OK)
+    if(hal_ret != HAL_OK)
     {
         ESP_LOGE(TAG, "Failed to write temperature threshold");
         return ESP_FAIL;
